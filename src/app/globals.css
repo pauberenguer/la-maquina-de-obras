@@ -2,7 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+  La Máquina de Obras · Reformas Soler
+  ------------------------------------
+  Aquí vive TODO el color del producto. Nadie redefine un color, un badge ni un
+  radio por su cuenta: si hace falta uno nuevo, se añade aquí.
+*/
 
 @theme inline {
   --color-background: var(--background);
@@ -39,6 +44,34 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* La marca */
+  --color-marca: var(--marca);
+  --color-marca-suave: var(--marca-suave);
+  --color-naranja: var(--naranja);
+  --color-naranja-suave: var(--naranja-suave);
+  --color-positivo: var(--positivo);
+
+  /* Los estados del presupuesto: el mismo color en todo el producto */
+  --color-borrador: var(--borrador);
+  --color-borrador-fondo: var(--borrador-fondo);
+  --color-enviado: var(--enviado);
+  --color-enviado-fondo: var(--enviado-fondo);
+  --color-visto: var(--visto);
+  --color-visto-fondo: var(--visto-fondo);
+  --color-conversacion: var(--conversacion);
+  --color-conversacion-fondo: var(--conversacion-fondo);
+  --color-ganado: var(--ganado);
+  --color-ganado-fondo: var(--ganado-fondo);
+  --color-perdido: var(--perdido);
+  --color-perdido-fondo: var(--perdido-fondo);
+  --color-expirado: var(--expirado);
+  --color-expirado-fondo: var(--expirado-fondo);
+
+  /* Lo que no está en el banco de precios */
+  --color-amarilla: var(--amarilla);
+  --color-amarilla-fondo: var(--amarilla-fondo);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,72 +82,75 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Superficies y texto */
+  --background: oklch(0.9759 0.0029 264.54); /* #F6F7F9 */
+  --foreground: oklch(0.2373 0.0113 254.06); /* #1B1F24 */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --popover-foreground: var(--foreground);
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  /* Azul de Reformas Soler: toda acción primaria */
+  --primary: oklch(0.5604 0.1975 262.24); /* #2E6BE6 */
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.967 0.0029 264.54); /* #F3F4F6 */
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.967 0.0029 264.54);
+  --muted-foreground: oklch(0.551 0.0234 264.36); /* #6B7280 */
+  --accent: oklch(0.967 0.0029 264.54);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.5771 0.2152 27.33); /* #DC2626 */
+
+  --border: oklch(0.9276 0.0058 264.53); /* #E5E7EB */
+  --input: oklch(0.8717 0.0093 258.34); /* #D1D5DB */
+  --ring: oklch(0.5604 0.1975 262.24);
+
+  --radius: 0.5rem; /* 8 px; las tarjetas usan rounded-xl → 11,2 px */
+
+  /* Marca */
+  --marca: oklch(0.264 0.0368 261.78); /* #1B2537, el azul marino de la barra */
+  --marca-suave: oklch(0.32 0.035 261.78);
+  --naranja: oklch(0.7349 0.1613 58.77); /* #F28C28 */
+  --naranja-suave: oklch(0.9682 0.0254 78.92);
+  --positivo: oklch(0.6271 0.1699 149.21); /* #16A34A */
+
+  /* Estados */
+  --borrador: oklch(0.551 0.0234 264.36);
+  --borrador-fondo: oklch(0.967 0.0029 264.54);
+  --enviado: oklch(0.5461 0.2152 262.88);
+  --enviado-fondo: oklch(0.9567 0.019 263.01);
+  --visto: oklch(0.5413 0.2466 293.01);
+  --visto-fondo: oklch(0.9484 0.0276 301.76);
+  --conversacion: oklch(0.6658 0.1574 58.32);
+  --conversacion-fondo: oklch(0.9682 0.0254 78.92);
+  --ganado: oklch(0.6271 0.1699 149.21);
+  --ganado-fondo: oklch(0.9611 0.0215 163.06);
+  --perdido: oklch(0.5771 0.2152 27.33);
+  --perdido-fondo: oklch(0.9566 0.0185 17.48);
+  --expirado: oklch(0.3729 0.0306 259.73);
+  --expirado-fondo: oklch(0.9276 0.0058 264.53);
+
+  /* Línea fuera del banco */
+  --amarilla: oklch(0.7686 0.1647 70.08); /* #F59E0B */
+  --amarilla-fondo: oklch(0.9619 0.058 95.62); /* #FEF3C7 */
+
+  /* Gráficos (se usan poco: el panel enseña cifras, no gráficas) */
+  --chart-1: var(--primary);
+  --chart-2: var(--visto);
+  --chart-3: var(--conversacion);
+  --chart-4: var(--ganado);
+  --chart-5: var(--perdido);
+
+  /* La barra lateral */
+  --sidebar: var(--marca);
+  --sidebar-foreground: oklch(0.93 0.008 261.78);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(1 0 0 / 10%);
+  --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: var(--primary);
 }
 
 @layer base {
@@ -123,11 +159,44 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Los importes y las mediciones se alinean por la coma */
+  .cifra {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 }
+
 :root {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* La página pública impresa: sin barras, sin botones, sin sombras. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .no-imprimir {
+    display: none !important;
+  }
+  .imprimir-limpio {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  .evitar-corte {
+    break-inside: avoid;
+  }
 }

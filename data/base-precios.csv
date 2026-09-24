@@ -1,0 +1,73 @@
+codigo,capitulo,partida,unidad,precio,margen_objetivo
+DEM-01,Demoliciones,Demolición de bañera y retirada de escombros a contenedor,ud,380,35
+DEM-02,Demoliciones,Demolición de plato de ducha existente,ud,240,35
+DEM-03,Demoliciones,Picado de alicatado en paramentos,m²,14,40
+DEM-04,Demoliciones,Picado de solado y capa de mortero,m²,18,40
+DEM-05,Demoliciones,Desmontaje de sanitarios y mobiliario de baño (conjunto),ud,180,40
+DEM-06,Demoliciones,Demolición de tabique de ladrillo hasta 10 cm,m²,32,35
+DEM-07,Demoliciones,Desmontaje de mobiliario de cocina,ud,260,40
+DEM-08,Demoliciones,Contenedor de escombros 5 m³ (alquiler + transporte + tasas),ud,290,15
+DEM-09,Demoliciones,Bajada de escombros por medios manuales sin ascensor,m³,45,30
+DEM-10,Demoliciones,Levantado de puerta y marco,ud,55,40
+ALB-01,Albañilería,Tabique de ladrillo hueco doble,m²,48,30
+ALB-02,Albañilería,Enfoscado de paramento con mortero de cemento,m²,22,35
+ALB-03,Albañilería,Recrecido de suelo con mortero autonivelante,m²,26,30
+ALB-04,Albañilería,Enlucido de yeso a buena vista,m²,16,35
+ALB-05,Albañilería,Formación de pendientes para plato de ducha de obra,ud,320,30
+ALB-06,Albañilería,Impermeabilización de zona de ducha (lámina + cinta),m²,38,30
+ALB-07,Albañilería,Cierre de rozas y remates,pa,180,40
+ALB-08,Albañilería,Trasdosado de placa de yeso laminado,m²,42,30
+ALB-09,Albañilería,Falso techo de placa de yeso laminado,m²,44,30
+ALB-10,Albañilería,Apertura de hueco en tabique para puerta,ud,240,35
+FON-01,Fontanería,Renovación de instalación de fontanería de baño completo (PEX agua fría y caliente),ud,890,30
+FON-02,Fontanería,Punto de agua nuevo (toma fría y caliente + desagüe),ud,160,35
+FON-03,Fontanería,Plato de ducha de resina 120×80 instalado,ud,690,28
+FON-04,Fontanería,Plato de ducha de resina 140×80 instalado,ud,760,28
+FON-05,Fontanería,Mampara de ducha frontal corredera instalada,ud,520,25
+FON-06,Fontanería,Grifería termostática de ducha instalada,ud,290,25
+FON-07,Fontanería,Grifería monomando de lavabo instalada,ud,145,25
+FON-08,Fontanería,Inodoro compacto instalado,ud,320,25
+FON-09,Fontanería,Mueble de baño suspendido 80 cm con lavabo instalado,ud,640,25
+FON-10,Fontanería,Espejo de baño con luz LED instalado,ud,210,25
+FON-11,Fontanería,Renovación de desagües de baño,ud,380,30
+FON-12,Fontanería,Termo eléctrico 80 l instalado,ud,420,25
+FON-13,Fontanería,Renovación de instalación de fontanería de cocina,ud,520,30
+ELE-01,Electricidad,Punto de luz sencillo con mecanismo,ud,65,35
+ELE-02,Electricidad,Punto de luz conmutado con mecanismos,ud,85,35
+ELE-03,Electricidad,Toma de corriente 16 A,ud,58,35
+ELE-04,Electricidad,Renovación de instalación eléctrica de baño,ud,380,30
+ELE-05,Electricidad,Renovación de instalación eléctrica de cocina,ud,620,30
+ELE-06,Electricidad,Cuadro eléctrico nuevo con protecciones,ud,540,25
+ELE-07,Electricidad,Downlight LED empotrado instalado,ud,48,30
+ELE-08,Electricidad,Extractor de baño con temporizador instalado,ud,140,30
+ALI-01,Alicatados y solados,Alicatado con azulejo cerámico gama media (material incluido),m²,84,30
+ALI-02,Alicatados y solados,Alicatado con porcelánico gran formato gama alta (material incluido),m²,118,30
+ALI-03,Alicatados y solados,Solado con gres porcelánico gama media (material incluido),m²,78,30
+ALI-04,Alicatados y solados,Solado con gres porcelánico gama alta (material incluido),m²,105,30
+ALI-05,Alicatados y solados,Rodapié cerámico,ml,14,35
+ALI-06,Alicatados y solados,Suelo laminado AC5 instalado (material incluido),m²,38,30
+ALI-07,Alicatados y solados,Suelo vinílico SPC clic instalado (material incluido),m²,46,30
+ALI-08,Alicatados y solados,Rejuntado con junta epoxi,m²,12,40
+CAR-01,Carpintería,Puerta de paso lacada blanca con marco y herrajes,ud,380,25
+CAR-02,Carpintería,Puerta corredera con casete empotrado,ud,760,25
+CAR-03,Carpintería,Armario empotrado a medida (frente + interior),ml,640,25
+CAR-04,Carpintería,Ventana de PVC oscilobatiente con doble vidrio,ud,620,22
+CAR-05,Carpintería,Rodapié de DM lacado,ml,11,35
+PIN-01,Pintura,Pintura plástica lisa en paredes y techos (dos manos),m²,9,40
+PIN-02,Pintura,Alisado de gotelé y pintado,m²,18,40
+PIN-03,Pintura,Esmaltado de puerta y marco,ud,95,40
+PIN-04,Pintura,Pintado de radiador,ud,45,40
+COC-01,Cocina,Mobiliario de cocina en laminado (suministro y montaje),ml,520,25
+COC-02,Cocina,Encimera de cuarzo compacto,ml,290,25
+COC-03,Cocina,Encimera de laminado postformado,ml,95,25
+COC-04,Cocina,Fregadero bajo encimera con grifería instalado,ud,380,25
+COC-05,Cocina,Instalación de electrodoméstico (por unidad),ud,60,40
+COC-06,Cocina,Campana extractora decorativa instalada,ud,340,25
+CLI-01,Climatización,Split de aire acondicionado 3.000 frigorías instalado,ud,980,22
+CLI-02,Climatización,Radiador toallero eléctrico instalado,ud,260,25
+GES-01,Gestión y varios,Protección de zonas comunes y mobiliario,pa,140,40
+GES-02,Gestión y varios,Limpieza final de obra,pa,220,40
+GES-03,Gestión y varios,Gestión de licencia de obra menor (sin tasas),pa,180,45
+GES-04,Gestión y varios,Transporte y medios auxiliares,pa,160,30
+GES-05,Gestión y varios,Hora de oficial de primera,h,34,35
+GES-06,Gestión y varios,Hora de peón,h,26,35

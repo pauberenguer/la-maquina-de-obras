@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# La Máquina de Obras
 
-## Getting Started
+Sistema de presupuestos y seguimiento para **Reformas Soler**, una empresa de
+reformas de Barcelona. El jefe dicta la visita al salir del piso y sale un
+presupuesto con su marca en minutos; cada presupuesto enviado avisa cuando el
+cliente lo lee, se persigue solo, caduca con fecha, se firma en la propia página
+y se mide en un panel con euros reales.
 
-First, run the development server:
+Tiene dos caras: la **web pública** de Reformas Soler (`/`), desde la que
+cualquiera pide presupuesto (`/solicitar`), y el **panel de Manolo** (`/panel`),
+protegido con una contraseña.
+
+## Arrancarlo en tu máquina
+
+Hace falta **Node 20.9 o superior**.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install          # solo la primera vez
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre `.env.local` y pon al menos `OPENAI_API_KEY`, `PANEL_PASSWORD` y
+`PANEL_SECRET` (este último, con `openssl rand -hex 32`). Lo demás es opcional:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Para qué sirve | Si falta |
+|---|---|---|
+| `OPENAI_API_KEY` | La IA que lee la visita y redacta los seguimientos | Aviso en pantalla al convertir; el resto funciona |
+| `OPENAI_MODEL` | Modelo | `gpt-5.6-terra` |
+| `OPENAI_EFFORT` | Esfuerzo de razonamiento | `high` |
+| `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` | Avisos al móvil del jefe | Solo la campana del panel |
+| `APP_URL` | Dominio con el que se generan los enlaces | `http://localhost:3000` |
+| `PANEL_PASSWORD` | La contraseña del panel | El panel no abre y lo dice |
+| `PANEL_SECRET` | Firma la cookie de sesión (32 caracteres o más) | El panel no abre y lo dice |
+| `DATABASE_URL` + `DATABASE_AUTH_TOKEN` | La base que usa la app: en local, el fichero; en Vercel, Turso | `file:./data/demo.db` |
+| `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` | La base de producción, solo para los scripts que la cargan | No se usa |
+| `CRON_SECRET` | Protege `/api/tick` | El endpoint solo responde en desarrollo |
+| `DEMO_MODE` | La barra del reloj de la demo | `1` |
+| `DEMO_ALARMA` | Hora `HH:MM` a la que el seed deja un seguimiento listo para salir hoy | Dentro de 2 horas |
+| `RESEND_API_KEY` + `RESEND_TO` | Seguimientos por email real | Solo quedan registrados |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Después:
 
-## Learn More
+```bash
+npm run reset        # crea la base, importa el banco de precios y carga el seed
+npm run dev          # http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+La web está en http://localhost:3000 y el panel en http://localhost:3000/panel,
+que pide la contraseña de `PANEL_PASSWORD`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Comandos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo en http://localhost:3000 |
+| `npm run check` | `tsc --noEmit`: no se enseña nada con errores de tipos |
+| `npm run reset` | Vacía la base, aplica el esquema, importa el banco y carga el seed |
+| `npm run db:push` | Aplica el esquema a la base sin migraciones |
+| `npm run humo` | Prueba lo externo: la API de OpenAI, Telegram, `APP_URL` y Turso |
+| `npm run build` | Compila para producción |
 
-## Deploy on Vercel
+`npm run reset` **vacía la base entera** (borra sus tablas, no el fichero). Los datos de ejemplo se vuelven a
+generar con fechas relativas al día en que lo ejecutas, así que lo que ves en
+pantalla siempre parece de esta semana.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Cómo está montado
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/app/page.tsx     la web de Reformas Soler
+src/app/solicitar/   pedir presupuesto
+src/app/entrar/      la contraseña del panel
+src/app/panel/       las páginas del panel, con la barra lateral
+src/app/p/[token]/   la página pública del presupuesto, sin nada del panel
+src/proxy.ts         protege /panel (en Next 16 el middleware se llama proxy)
+src/app/api/         tracking, polling, tick
+src/db/              esquema, conexión, banco de precios, seed y reset
+src/lib/             reloj, importes, formatos, tipos, consultas, métricas, IA
+src/components/      ui/ (shadcn) y los componentes propios
+data/                base-precios.csv y demo.db (esta última fuera de git)
+```
+
+- **Next.js 16** (App Router, Turbopack), TypeScript estricto y Tailwind v4.
+- **libSQL con Drizzle**, sin migraciones: el esquema se aplica con `db:push`.
+  En local la base es un fichero; en producción, Turso. El acceso es asíncrono.
+- **Una contraseña para el panel**, sin librerías: una cookie firmada con HMAC,
+  un proxy en la puerta y la sesión comprobada otra vez en cada acción.
+- **La IA solo entiende texto**: importes, estados, tiempos, caducidad, tracking
+  y métricas son deterministas y no pasan por el modelo.
+- **Nunca se inventa un precio**: solo existen los del banco (`data/base-precios.csv`)
+  y los que escriba Manolo a mano. Lo demás sale en amarillo y sin precio.
+
+## Los datos de ejemplo
+
+El seed es determinista y cuadra al céntimo las cifras que salen en pantalla el
+día en que se ejecuta: 12 presupuestos vivos por 87.400 €, de ellos 4 sin
+respuesta desde hace más de 7 días por 31.200 €, y 28.900 € ganados en los
+últimos 30 días. Si alguna no cuadrara, `npm run reset` aborta y lo dice.
+
+La interfaz los declara como datos de ejemplo con una nota en Ajustes.
