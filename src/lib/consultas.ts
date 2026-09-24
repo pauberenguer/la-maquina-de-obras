@@ -467,3 +467,20 @@ export async function datosDeLaWeb(): Promise<DatosDeLaWeb> {
     partidas: activas.length,
   };
 }
+
+/**
+ * Cuántas entradas enseña la pestaña Actividad: los eventos más los avisos que
+ * no repiten lo que ya cuenta un evento de su mismo instante. Es el número del
+ * badge de la pestaña, y tiene que cuadrar con lo que se ve dentro.
+ */
+export async function cuantasEntradasDeActividad(presupuestoId: number, margenMs = 4000): Promise<number> {
+  const [eventos, avisos] = await Promise.all([
+    db.select({ ts: evento.ts }).from(evento).where(eq(evento.presupuestoId, presupuestoId)).all(),
+    db.select({ ts: aviso.ts }).from(aviso).where(eq(aviso.presupuestoId, presupuestoId)).all(),
+  ]);
+  const instantes = eventos.map((e) => e.ts.getTime());
+  const sueltos = avisos.filter(
+    (a) => !instantes.some((t) => Math.abs(t - a.ts.getTime()) <= margenMs),
+  ).length;
+  return instantes.length + sueltos;
+}

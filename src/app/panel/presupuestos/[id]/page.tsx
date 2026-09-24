@@ -11,7 +11,12 @@ import { Documento } from "@/components/presupuesto/documento";
 import { EnlacePublico } from "@/components/presupuesto/enlace-publico";
 import { PanelDelPresupuesto } from "@/components/presupuesto/panel";
 import { Seguimientos } from "@/components/presupuesto/seguimientos";
-import { elNegocio, eventosDe, lineasDe, presupuestoPorId } from "@/lib/consultas";
+import {
+  cuantasEntradasDeActividad,
+  elNegocio,
+  lineasDe,
+  presupuestoPorId,
+} from "@/lib/consultas";
 import {
   formatoDiasRestantes,
   formatoFecha,
@@ -31,10 +36,10 @@ export default async function FichaDelPresupuesto({ params }: PageProps<"/panel/
   const presupuesto = await presupuestoPorId(Number(id));
   if (!presupuesto) notFound();
 
-  const [negocio, lineas, eventos] = await Promise.all([
+  const [negocio, lineas, cuantosEventos] = await Promise.all([
     elNegocio(),
     lineasDe(presupuesto.id),
-    eventosDe(presupuesto.id),
+    cuantasEntradasDeActividad(presupuesto.id),
   ]);
   const hoy = ahora();
   const url = `${urlDeLaApp()}/p/${presupuesto.token}`;
@@ -77,7 +82,7 @@ export default async function FichaDelPresupuesto({ params }: PageProps<"/panel/
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <div className="rounded-xl border bg-card p-4">
             <PanelDelPresupuesto
-              cuantosEventos={eventos.length}
+              cuantosEventos={cuantosEventos}
               general={
                 <div className="space-y-4">
                   <dl className="space-y-2 text-sm">
@@ -145,7 +150,7 @@ export default async function FichaDelPresupuesto({ params }: PageProps<"/panel/
                     </div>
                   )}
 
-                  <AccionesDelPresupuesto presupuesto={presupuesto} />
+                  <AccionesDelPresupuesto presupuesto={presupuesto} amarillas={amarillas} />
                 </div>
               }
               actividad={<Actividad presupuestoId={presupuesto.id} />}
