@@ -7,7 +7,7 @@
 // DUEÑO: carril B2.
 import { headers } from "next/headers";
 import { presupuestoPorToken, type PresupuestoConCliente } from "@/lib/consultas";
-import { ipDe } from "@/lib/red";
+import { ipDe, ubicacionDe } from "@/lib/red";
 import { ahora, cargarReloj } from "@/lib/reloj";
 import type { Dispositivo } from "@/lib/tipos";
 
@@ -28,16 +28,15 @@ export function dispositivoDeUserAgent(ua: string | null): Dispositivo {
 }
 
 /**
- * Ciudad y país solo si los manda el túnel de Cloudflare. Sin túnel se quedan
- * en null y la interfaz dice «ubicación desconocida»: el día que APP_URL sea un
- * dominio público, esto empieza a llenarse sin tocar una línea.
+ * IP, ciudad, país y dispositivo de quien llama. La ciudad la pone Vercel en
+ * producción; en local se queda en null y la interfaz dice «ubicación
+ * desconocida».
  */
 export async function datosDeLaPeticion(): Promise<DatosDeLaPeticion> {
   const h = await headers();
   return {
     ip: ipDe(h),
-    ciudad: h.get("cf-ipcity")?.trim() || null,
-    pais: h.get("cf-ipcountry")?.trim() || null,
+    ...ubicacionDe(h),
     dispositivo: dispositivoDeUserAgent(h.get("user-agent")),
   };
 }

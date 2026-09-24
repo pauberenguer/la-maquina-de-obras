@@ -10,6 +10,24 @@ Tiene dos caras: la **web pública** de Reformas Soler (`/`), desde la que
 cualquiera pide presupuesto (`/solicitar`), y el **panel de Manolo** (`/panel`),
 protegido con una contraseña.
 
+## Cómo se construyó
+
+Con dos prompts a un agente de código. Cada paso tiene su tag:
+
+| Tag | Qué hay |
+|---|---|
+| `chasis` | El punto de partida: Next.js, shadcn, la base de datos y las reglas del agente (`CLAUDE.md`). Ni una pantalla del producto |
+| `v0` | Lo que sale de `PROMPT.md`: la web de Reformas Soler, `/solicitar`, `/entrar` y el panel con los datos de ejemplo |
+| `fase-1` … `fase-7` | Lo que sale de `ARRANQUE.md`, fase a fase |
+| `v1` | El producto entero, desplegado en producción |
+
+Para verlo paso a paso: `git switch --detach chasis` (o cualquier otro tag) y
+`git switch main` para volver.
+
+Para reproducirlo desde cero: sal al tag `chasis`, abre tu agente en la carpeta
+y dale el contenido de `PROMPT.md` (el de `main`). Cuando termine, el de
+`ARRANQUE.md`.
+
 ## Arrancarlo en tu máquina
 
 Hace falta **Node 20.9 o superior**.
@@ -62,6 +80,34 @@ que pide la contraseña de `PANEL_PASSWORD`.
 `npm run reset` **vacía la base entera** (borra sus tablas, no el fichero). Los datos de ejemplo se vuelven a
 generar con fechas relativas al día en que lo ejecutas, así que lo que ves en
 pantalla siempre parece de esta semana.
+
+## Desplegar en producción (Vercel + Turso)
+
+La app es la misma en local y en producción; solo cambia dónde está la base.
+
+1. **Turso**: crea una base (región Irlanda, `aws-eu-west-1`) y un token de
+   lectura y escritura sin caducidad. Pon los dos en `.env.local` como
+   `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`.
+2. **Los datos**: `npm run reset` en local (siembra con fechas de hoy) y después
+   `npm run turso -- --confirmar`, que vacía Turso, le aplica el esquema y copia
+   tu base local en lotes. Al final compara las filas de cada tabla.
+3. **Vercel** (plan gratuito): importa el repositorio y pon estas variables:
+
+   | Variable | Valor |
+   |---|---|
+   | `DATABASE_URL` | la URL de Turso (`libsql://…`) |
+   | `DATABASE_AUTH_TOKEN` | el token de Turso |
+   | `APP_URL` | `https://<tu-proyecto>.vercel.app` |
+   | `PANEL_PASSWORD`, `PANEL_SECRET`, `CRON_SECRET` | los de tu `.env.local` |
+   | `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_EFFORT` | los de tu `.env.local` |
+   | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | los de tu `.env.local` |
+   | `DEMO_MODE` | `1` si quieres la barra del reloj en el panel |
+
+   `vercel.json` ya fija las funciones en Dublín (`dub1`), junto a la base.
+4. **Comprobarlo**: `APP_URL=https://<tu-proyecto>.vercel.app npm run humo`.
+
+La ciudad de quien abre un presupuesto sale sola en producción: la pone Vercel
+en sus cabeceras. En local se ve «ubicación desconocida».
 
 ## Cómo está montado
 

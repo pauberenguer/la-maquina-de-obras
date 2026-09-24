@@ -1,7 +1,7 @@
 // Importador del banco de precios desde CSV. Lo usa el seed y la página Precios.
 import { readFileSync } from "node:fs";
 import { eq } from "drizzle-orm";
-import { resolve } from "node:path";
+import { join } from "node:path";
 import { db, partida } from "./index";
 import type { Unidad } from "@/lib/tipos";
 
@@ -83,9 +83,13 @@ export function leerBanco(csv: string): FilaBanco[] {
   });
 }
 
-/** Lee el CSV del disco. */
-export function leerBancoDelDisco(ruta = RUTA_BANCO): FilaBanco[] {
-  return leerBanco(readFileSync(resolve(process.cwd(), ruta), "utf8"));
+/**
+ * Lee el CSV del banco que viaja con el repositorio. La ruta va escrita entera
+ * a propósito: con una ruta variable, la compilación no sabe qué fichero es y
+ * mete el proyecto entero en la función del servidor.
+ */
+export function leerBancoDelDisco(): FilaBanco[] {
+  return leerBanco(readFileSync(join(process.cwd(), "data", "base-precios.csv"), "utf8"));
 }
 
 /**

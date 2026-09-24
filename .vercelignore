@@ -1,0 +1,11 @@
+# Lo que NO sube a Vercel al desplegar desde la CLI. Las claves van en las
+# variables del proyecto, la base de producción es Turso y el resto no hace
+# falta para compilar.
+.env*
+!.env.example
+data/*.db
+data/*.db-*
+referencias/
+.claude/
+.next/
+node_modules/

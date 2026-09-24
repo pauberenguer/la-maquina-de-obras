@@ -20,27 +20,12 @@ import {
   registrarLectura,
   seccionValida,
 } from "@/lib/lecturas";
-import { ipDe } from "@/lib/red";
+import { ipDe, ubicacionDe } from "@/lib/red";
 
 /** Nunca se cachea: cada lectura es un hecho nuevo. */
 export const dynamic = "force-dynamic";
 
 const OK = { ok: true } as const;
-
-/**
- * Ciudad y país: los pone el túnel de Cloudflare (`cf-ipcity`, `cf-ipcountry`).
- * Si no llegan —hoy, en local, no llegan— se queda en null y la interfaz dice
- * «ubicación desconocida». El día que haya túnel, esto funciona sin tocar nada.
- */
-function ubicacionDe(cabeceras: Headers): { ciudad: string | null; pais: string | null } {
-  const ciudad = cabeceras.get("cf-ipcity");
-  const pais = cabeceras.get("cf-ipcountry");
-  return {
-    ciudad: ciudad?.trim() || null,
-    // Cloudflare manda «XX» cuando no lo sabe.
-    pais: pais && pais.trim() && pais.trim() !== "XX" ? pais.trim() : null,
-  };
-}
 
 type Cuerpo = {
   token?: unknown;

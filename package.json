@@ -9,7 +9,8 @@
     "check": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "reset": "tsx src/db/reset.ts",
-    "humo": "tsx scripts/humo.ts"
+    "humo": "tsx scripts/humo.ts",
+    "turso": "tsx scripts/turso.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

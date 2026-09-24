@@ -4,29 +4,7 @@
 // No borra el fichero: borra las tablas desde dentro. Así funciona igual contra
 // el fichero local que contra Turso, y el servidor de desarrollo, que tiene la
 // base abierta, sigue viendo la misma.
-import { execFileSync } from "node:child_process";
-import { createClient } from "@libsql/client";
-
-function cargarEnv() {
-  try {
-    process.loadEnvFile(".env.local");
-  } catch {
-    // Sin .env.local se usan los valores por defecto.
-  }
-}
-
-async function vaciar(url: string, authToken?: string) {
-  const cliente = createClient({ url, authToken });
-  const tablas = await cliente.execute(
-    "select name from sqlite_master where type = 'table' and name not like 'sqlite_%' and name not like '\\_%' escape '\\'",
-  );
-  await cliente.execute("PRAGMA foreign_keys = OFF");
-  for (const fila of tablas.rows) {
-    await cliente.execute(`DROP TABLE IF EXISTS "${String(fila.name)}"`);
-  }
-  cliente.close();
-  return tablas.rows.length;
-}
+import { aplicarEsquema, cargarEnv, vaciar } from "./herramientas";
 
 async function main() {
   cargarEnv();
@@ -37,7 +15,7 @@ async function main() {
   const borradas = await vaciar(url, authToken);
   console.log(`· base vaciada (${borradas} tablas)`);
 
-  execFileSync("npx", ["drizzle-kit", "push", "--force"], { stdio: "pipe", env: process.env });
+  aplicarEsquema(url, authToken);
   console.log("· esquema aplicado");
 
   const { sembrar } = await import("./seed");
