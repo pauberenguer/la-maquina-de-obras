@@ -9,7 +9,7 @@ import type { Dispositivo, Estado, Origen, Seccion, Unidad, Urgencia } from "@/l
 
 export const EMPRESA = {
   nombre: "Reformas Soler",
-  cif: "B66412903",
+  cif: "B66412907",
   direccion: "Carrer de Provença 233, 08008 Barcelona",
   telefono: "93 555 41 20",
   email: "hola@reformassoler.es",

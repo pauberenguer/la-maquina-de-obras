@@ -58,7 +58,7 @@ export default async function Solicitar() {
         </div>
 
         <div className="rounded-xl border bg-card p-5 sm:p-7">
-          <FormularioSolicitud />
+          <FormularioSolicitud telefono={negocio.telefono} />
         </div>
       </main>
 

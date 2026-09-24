@@ -1,11 +1,10 @@
 "use client";
 // El formulario de /solicitar. Corto y honesto: nada de precios ni de plazos
-// automáticos. Valida al momento con las mismas reglas que el servidor.
-//
-// En la fase 0 todavía no guarda: lo dice claro al enviarlo. Guardar la
-// solicitud y avisar a Manolo llegan en la fase 1.
-import { useState } from "react";
-import { InfoIcon, SendIcon } from "lucide-react";
+// automáticos. Valida al momento con las mismas reglas que el servidor, pero
+// quien decide es el servidor: sus errores son los que se enseñan.
+import { useState, useTransition } from "react";
+import { CircleCheckIcon, LoaderCircleIcon, SendIcon } from "lucide-react";
+import { enviarSolicitud } from "@/app/solicitar/acciones";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +20,7 @@ import {
 function leer(formulario: HTMLFormElement): Record<string, unknown> {
   const datos = new FormData(formulario);
   return {
+    empresa: String(datos.get("empresa") ?? ""),
     nombre: String(datos.get("nombre") ?? ""),
     telefono: String(datos.get("telefono") ?? ""),
     email: String(datos.get("email") ?? ""),
@@ -32,20 +32,62 @@ function leer(formulario: HTMLFormElement): Record<string, unknown> {
   };
 }
 
-export function FormularioSolicitud() {
+export function FormularioSolicitud({ telefono }: { telefono: string }) {
   const [errores, setErrores] = useState<ErroresSolicitud>({});
-  const [listo, setListo] = useState(false);
+  const [mensaje, setMensaje] = useState<string | null>(null);
+  const [enviada, setEnviada] = useState<{ nombre: string } | null>(null);
+  const [enviando, empezar] = useTransition();
 
   function enviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const r = validarSolicitud(leer(e.currentTarget));
-    if (!r.ok) {
-      setErrores(r.errores);
-      setListo(false);
+    const crudo = leer(e.currentTarget);
+    const local = validarSolicitud(crudo);
+    if (!local.ok) {
+      setErrores(local.errores);
+      setMensaje(null);
       return;
     }
     setErrores({});
-    setListo(true);
+    setMensaje(null);
+    empezar(async () => {
+      try {
+        const r = await enviarSolicitud(crudo);
+        if (r.ok) setEnviada({ nombre: r.nombre });
+        else {
+          setErrores(r.errores ?? {});
+          setMensaje(r.mensaje ?? null);
+        }
+      } catch {
+        setMensaje(`No hemos podido enviar la solicitud. Inténtalo de nuevo o llámanos al ${telefono}.`);
+      }
+    });
+  }
+
+  if (enviada) {
+    return (
+      <div role="status" className="flex flex-col items-start gap-4 py-6">
+        <span className="flex size-11 items-center justify-center rounded-full bg-ganado-fondo text-ganado">
+          <CircleCheckIcon className="size-6" />
+        </span>
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {enviada.nombre ? `Gracias, ${enviada.nombre}` : "Gracias"}
+          </h2>
+          <p className="mt-2 leading-relaxed text-muted-foreground">
+            Hemos recibido tu solicitud. Manolo te llamará para concertar la visita: sin ver la obra
+            no damos precios, porque cada casa es distinta. Después de la visita, tendrás el
+            presupuesto al día siguiente.
+          </p>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          ¿Te corre prisa? Llámanos al{" "}
+          <a href={`tel:${telefono.replace(/\s/g, "")}`} className="cifra font-medium text-foreground hover:underline">
+            {telefono}
+          </a>
+          .
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -113,19 +155,15 @@ export function FormularioSolicitud() {
         {errores.consentimiento && <Error texto={errores.consentimiento} />}
       </div>
 
-      {listo && (
-        <p role="status" className="flex items-start gap-2 rounded-lg border bg-secondary px-3 py-2.5 text-sm">
-          <InfoIcon className="mt-0.5 size-4 shrink-0 text-marca" />
-          <span>
-            El formulario está bien rellenado, pero todavía no envía nada: guardar la solicitud y
-            avisar a Manolo es la fase 1.
-          </span>
+      {mensaje && (
+        <p role="alert" className="rounded-lg bg-perdido-fondo px-3 py-2.5 text-sm text-perdido">
+          {mensaje}
         </p>
       )}
 
-      <Button type="submit" size="lg" className="h-11 w-full sm:w-auto sm:self-start">
-        <SendIcon />
-        Enviar Solicitud
+      <Button type="submit" size="lg" disabled={enviando} className="h-11 w-full sm:w-auto sm:self-start">
+        {enviando ? <LoaderCircleIcon className="animate-spin" /> : <SendIcon />}
+        {enviando ? "Enviando…" : "Enviar Solicitud"}
       </Button>
     </form>
   );

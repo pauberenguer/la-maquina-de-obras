@@ -44,14 +44,18 @@ export function enlaceDelPanel(presupuestoId: number | null): string {
  * Deja el aviso en la campana y lo manda al móvil del jefe.
  * Respeta la agrupación: un aviso por minuto y presupuesto.
  */
-export async function notificar(presupuestoId: number | null, texto: string): Promise<void> {
+export async function notificar(
+  presupuestoId: number | null,
+  texto: string,
+  enlace = enlaceDelPanel(presupuestoId),
+): Promise<void> {
   await cargarReloj();
   const ts = ahora();
   await db.insert(aviso).values({ presupuestoId, texto, leido: false, ts }).run();
   if (presupuestoId !== null) {
     await db.update(presupuesto).set({ ultimoAvisoEn: ts }).where(eq(presupuesto.id, presupuestoId)).run();
   }
-  await enviarTelegram(texto, enlaceDelPanel(presupuestoId));
+  await enviarTelegram(texto, enlace);
 }
 
 /** Cuántos avisos se han creado de este presupuesto desde un instante dado. */

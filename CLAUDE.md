@@ -53,7 +53,7 @@ src/proxy.ts              protege /panel/* (en Next 16 el middleware es «proxy�
 src/app/api/              route handlers: tracking, polling, tick, ia
 src/db/                   index.ts (conexión) · schema.ts · seed.ts · reset.ts
 src/lib/                  reloj.ts · importes.ts · formato.ts · ia.ts · telegram.ts · tick.ts
-                          sesion.ts · firma-sesion.ts · limites.ts · solicitud-web.ts
+                          sesion.ts · firma-sesion.ts · limites.ts · solicitud-web.ts · solicitudes.ts
 src/components/           ui/ (shadcn, no se tocan) · el resto, componentes propios
 data/                     base-precios.csv · demo.db (ignorado por git)
 ```
@@ -107,6 +107,10 @@ data/                     base-precios.csv · demo.db (ignorado por git)
   `await exigirSesion()`**, porque una acción se puede invocar desde cualquier
   ruta. Públicos: `/`, `/solicitar`, `/p/[token]`, `/api/lectura` y
   `/api/publico/*`.
+- **Todo lo que se exporta de un fichero `"use server"` es una acción que se
+  puede invocar desde internet**, aunque ninguna pantalla la use. En esos
+  ficheros solo hay envoltorios que empiezan por `exigirSesion()`; el trabajo de
+  verdad vive en `src/lib/` (por ejemplo, `src/lib/solicitudes.ts`).
 - La IA nunca se llama desde el navegador, y siempre con salida estructurada
   validada por Zod: nunca se parsea texto libre del modelo.
 - Telegram por `fetch` al Bot API, agrupado: máximo un aviso por minuto y

@@ -186,10 +186,13 @@ export function formatoUbicacion(ciudad?: string | null, pais?: string | null): 
  * es el que escribió Manolo.
  */
 const PALABRAS_MENORES = new Set([
-  "a", "ante", "bajo", "con", "contra", "de", "desde", "del", "en", "entre", "hacia",
+  "a", "ante", "con", "contra", "de", "desde", "del", "en", "entre", "hacia",
   "hasta", "para", "por", "según", "sin", "sobre", "tras", "y", "e", "o", "u", "ni",
   "que", "como", "el", "la", "los", "las", "un", "una", "unos", "unas", "al", "lo", "se",
 ]);
+
+/** Las unidades de obra se escriben siempre en minúscula: «90 m²», nunca «90 M²». */
+const UNIDADES_EN_MINUSCULA = /^(m|m²|m³|m2|m3|ml|cm|mm|km|kg|ud|uds|h|pa|l)$/i;
 
 export function formatoTitulo(texto: string | null | undefined): string {
   if (!texto) return "";
@@ -199,6 +202,9 @@ export function formatoTitulo(texto: string | null | undefined): string {
     .map((palabra) => {
       const nucleo = palabra.replace(/[^\p{L}\p{N}]/gu, "");
       if (!nucleo) return palabra;
+      if (!abierta && UNIDADES_EN_MINUSCULA.test(palabra.replace(/^[(«"]+/, "").replace(/[.,;:)»"]+$/, ""))) {
+        return palabra;
+      }
       const primera = abierta;
       abierta = false;
       // Lo que ya viene en mayúsculas es intencionado y no se toca: las siglas
