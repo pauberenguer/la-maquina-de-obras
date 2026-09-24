@@ -3,13 +3,17 @@
 //
 // DUEÑO: carril C.
 
+/** Un aviso no puede retrasar una petición del producto más que esto. */
+const ESPERA_MAXIMA_MS = 4000;
+
 export function hayTelegram(): boolean {
   return Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
 }
 
 /**
- * Manda un mensaje al chat del jefe. Nunca lanza: un fallo de Telegram no puede
- * tumbar una petición del producto, así que se registra y se sigue.
+ * Manda un mensaje al chat del jefe. Nunca lanza y nunca se queda colgado: un
+ * fallo de Telegram no puede tumbar una petición del producto, así que se
+ * registra y se sigue.
  */
 export async function enviarTelegram(texto: string, enlace?: string): Promise<boolean> {
   if (!hayTelegram()) return false;
@@ -25,6 +29,7 @@ export async function enviarTelegram(texto: string, enlace?: string): Promise<bo
           text: cuerpo,
           disable_web_page_preview: true,
         }),
+        signal: AbortSignal.timeout(ESPERA_MAXIMA_MS),
       },
     );
     if (!res.ok) {

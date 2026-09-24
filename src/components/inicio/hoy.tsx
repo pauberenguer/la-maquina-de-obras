@@ -2,6 +2,10 @@
 // seguimientos salen hoy, qué caduca en 3 días o menos y qué caducado se ha
 // vuelto a abrir. Todo sale de la base, nada está escrito a mano.
 //
+// El orden no es casual: primero lo que hace ganar dinero hoy (un caducado que
+// alguien vuelve a abrir es la mejor llamada del día), luego lo que acaba de
+// pasar, y al final lo que vence. Cada fila lleva a su ficha.
+//
 // DUEÑO: carril C.
 import Link from "next/link";
 import {
@@ -39,7 +43,8 @@ type Fila = {
   detalle: string;
   importe: number;
   href: string;
-  seccion: string;
+  /** Lo que se ordena: menor, más arriba. */
+  prioridad: number;
 };
 
 const TONOS = {
@@ -49,17 +54,43 @@ const TONOS = {
   naranja: "bg-naranja-suave text-conversacion",
 };
 
+/** Los cuatro bloques de HOY, por lo que importa atenderlos. */
+const REABIERTO = 0;
+const APERTURA = 1_000_000;
+const SEGUIMIENTO = 2_000_000;
+const CADUCIDAD = 3_000_000;
+
 export async function Hoy() {
   await cargarReloj();
-  const [aperturas, seguimientos, caducan, reabiertos] = await Promise.all([
+  const [reabiertos, aperturas, seguimientos, caducan] = await Promise.all([
+    expiradosReabiertos(),
     aperturasDeHoy(),
     seguimientosDeHoy(),
     caducanPronto(),
-    expiradosReabiertos(),
   ]);
   const hoy = ahora();
   const filas: Fila[] = [];
 
+  // Un caducado que alguien vuelve a abrir: señal de compra, lo primero del día.
+  for (const p of reabiertos) {
+    filas.push({
+      clave: `reabierto-${p.id}`,
+      icono: RotateCcwIcon,
+      tono: "naranja",
+      texto: (
+        <>
+          <strong className="font-medium">{p.clienteNombre}</strong> ha vuelto a abrir un
+          presupuesto caducado
+        </>
+      ),
+      detalle: `${formatoRelativo(p.ultimaLectura, hoy)} · ${formatoTitulo(p.titulo)} · es una señal de compra: llámale`,
+      importe: p.total,
+      href: `/panel/presupuestos/${p.id}`,
+      prioridad: REABIERTO - p.ultimaLectura.getTime() / 1000,
+    });
+  }
+
+  // Lo que acaba de pasar, lo más reciente arriba.
   for (const a of aperturas) {
     filas.push({
       clave: `apertura-${a.presupuestoId}-${a.ts.getTime()}`,
@@ -71,10 +102,10 @@ export async function Hoy() {
           {formatoTitulo(a.titulo)}
         </>
       ),
-      detalle: `${formatoHora(a.ts)} · ${formatoVisita(a.visitaN)} · ${formatoDispositivo(a.dispositivo)} · ${formatoUbicacion(a.ciudad, a.pais)}`,
+      detalle: `${formatoRelativo(a.ts, hoy)} · ${formatoHora(a.ts)} · ${formatoVisita(a.visitaN)} · ${formatoDispositivo(a.dispositivo)} · ${formatoUbicacion(a.ciudad, a.pais)}`,
       importe: a.total,
       href: `/panel/presupuestos/${a.presupuestoId}`,
-      seccion: "Presupuestos",
+      prioridad: APERTURA - a.ts.getTime() / 1000,
     });
   }
 
@@ -90,10 +121,10 @@ export async function Hoy() {
           {s.clienteNombre}
         </>
       ),
-      detalle: `${formatoHora(s.ejecutarEn)} · ${s.asunto}`,
+      detalle: `${formatoHora(s.ejecutarEn)} · ${formatoRelativo(s.ejecutarEn, hoy)} · ${s.asunto}`,
       importe: s.total,
       href: `/panel/presupuestos/${s.presupuestoId}`,
-      seccion: "Presupuestos",
+      prioridad: SEGUIMIENTO + s.ejecutarEn.getTime() / 1000,
     });
   }
 
@@ -111,27 +142,11 @@ export async function Hoy() {
       detalle: `${formatoTitulo(p.titulo)} · ${p.direccionObra}`,
       importe: p.total,
       href: `/panel/presupuestos/${p.id}`,
-      seccion: "Presupuestos",
+      prioridad: CADUCIDAD + (p.validoHasta?.getTime() ?? 0) / 1000,
     });
   }
 
-  for (const p of reabiertos) {
-    filas.push({
-      clave: `reabierto-${p.id}`,
-      icono: RotateCcwIcon,
-      tono: "naranja",
-      texto: (
-        <>
-          <strong className="font-medium">{p.clienteNombre}</strong> ha vuelto a abrir un
-          presupuesto caducado
-        </>
-      ),
-      detalle: `${formatoRelativo(p.ultimaLectura, hoy)} · ${formatoTitulo(p.titulo)} · es una señal de compra: llámale`,
-      importe: p.total,
-      href: `/panel/presupuestos/${p.id}`,
-      seccion: "Presupuestos",
-    });
-  }
+  filas.sort((a, b) => a.prioridad - b.prioridad);
 
   return (
     <section className="overflow-hidden rounded-xl border bg-card">
@@ -170,7 +185,6 @@ export async function Hoy() {
                   <span className="block truncate text-xs text-muted-foreground">{fila.detalle}</span>
                 </span>
                 <Importe centimos={fila.importe} corto className="text-sm font-medium" />
-                <span className="hidden text-sm text-muted-foreground sm:inline">{fila.seccion}</span>
                 <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />
               </Link>
             </li>
