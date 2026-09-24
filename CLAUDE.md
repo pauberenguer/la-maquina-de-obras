@@ -63,19 +63,40 @@ data/                     base-precios.csv · demo.db (ignorado por git)
 1. **Nunca se inventa un precio.** Solo existen los del banco (tabla `partida`)
    o los que Manolo escriba a mano. Una línea sin partida del banco es
    amarilla y no tiene precio hasta que él lo ponga.
-2. **Todo lo que no es lenguaje es determinista:** importes, estados, tiempos,
+2. **Sin visita no hay presupuesto.** Una solicitud que llega de la web
+   (`origen = "cliente"`) no trae mediciones: al convertirla, todas sus líneas
+   salen amarillas y sin precio, aunque la IA reconozca la partida.
+3. **Todo lo que no es lenguaje es determinista:** importes, estados, tiempos,
    caducidad, tracking y métricas. La IA solo entiende texto libre, casa
    conceptos con el banco y redacta seguimientos.
-3. El **importe** de un presupuesto es el total con IVA. El cálculo vive en
+4. Una línea **opcional nace SIN marcar** (`elegida: false`): la marca el
+   cliente en su página y entonces entra en la base. Si naciera marcada, el
+   importe la contaría de más.
+5. El **importe** de un presupuesto es el total con IVA. El cálculo vive en
    `src/lib/importes.ts` y lo usan el editor, la página pública y el seed.
    Nadie recalcula por su cuenta.
-4. **Estados:** `borrador → enviado → visto → en_conversacion → ganado |
+6. **Estados:** `borrador → enviado → visto → en_conversacion → ganado |
    perdido (con motivo) | expirado`. Ganado, Perdido y Expirado cancelan las
    tareas pendientes. La firma pasa a Ganado.
-5. **Seguimientos** a los 3, 7 y 14 días del envío; máximo tres; se paran si el
+7. **Seguimientos** a los 3, 7 y 14 días del envío; máximo tres; se paran si el
    cliente responde o acepta; el último menciona la caducidad real.
-6. Los € del panel son **sumas de presupuestos reales**, nunca estimaciones, y
+8. Los € del panel son **sumas de presupuestos reales**, nunca estimaciones, y
    cada métrica enseña su fórmula.
+
+## Por dónde se muta un presupuesto
+
+Nadie escribe estos campos a mano. Siempre por aquí:
+
+- `src/lib/eventos.ts` — `cambiarEstado()` es la única puerta de estado (cancela
+  la persecución al cerrar), más `registrarEvento()`, `cancelarTareas()` y
+  `marcarRespuesta()`.
+- `src/lib/presupuestos.ts` — `recalcular()` es el único que escribe `base`,
+  `iva_importe`, `total`, `coste` y `margen_pct`; `lineaDesdePartida()` es la
+  única forma de que una línea tenga precio sin que lo escriba Manolo.
+- `src/lib/envio.ts` — `enviarPresupuesto()`: caducidad, los tres toques y el
+  aviso. Los textos los redacta la IA con respaldo en los de Ajustes.
+- `src/lib/solicitudes.ts` — guardar una solicitud (de Manolo o de la web) y
+  convertirla en presupuesto.
 
 ## Convenciones técnicas
 
