@@ -12,6 +12,7 @@ import {
   LoaderCircleIcon,
   PencilIcon,
   SendIcon,
+  LayoutTemplateIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -152,6 +153,17 @@ export function AccionesDelPresupuesto({
               : "Presupuesto caducado. Si el cliente lo vuelve a abrir, te avisa: es señal de compra."}
         </p>
       )}
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full"
+        nativeButton={false}
+        render={<Link href={`/panel/plantillas/nueva?desde=${presupuesto.id}`} />}
+      >
+        <LayoutTemplateIcon />
+        Guardar como Plantilla
+      </Button>
 
       <Dialog open={preguntandoPerdido} onOpenChange={setPreguntandoPerdido}>
         <DialogContent>

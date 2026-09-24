@@ -1,27 +1,50 @@
-// Plantillas: presupuestos tipo. Ver sus líneas, crear desde plantilla y guardar
-// como plantilla llegan en la fase 4.
+// Plantillas: los presupuestos tipo de Reformas Soler. Las obras de siempre,
+// con sus líneas ya puestas, para arrancar en dos clics y ajustar mediciones.
 import { LayoutTemplateIcon } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
-import { plantillas } from "@/lib/consultas";
-import { formatoTitulo } from "@/lib/formato";
+import { TarjetaDePlantilla, type PlantillaEnPantalla } from "@/components/plantillas/tarjeta";
+import { resumirPlantilla } from "@/components/plantillas/resumen";
+import { elNegocio, plantillas } from "@/lib/consultas";
 
 export const dynamic = "force-dynamic";
 
 export default async function Plantillas() {
-  const lista = await plantillas();
+  const [negocio, todas] = await Promise.all([elNegocio(), plantillas()]);
+  const lista: PlantillaEnPantalla[] = await Promise.all(
+    todas.map(async (p) => ({
+      id: p.id,
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      ...(await resumirPlantilla(p.id, negocio.ivaPct)),
+    })),
+  );
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-5">
       <PageHeader
         titulo="Plantillas"
-        subtitulo="Presupuestos tipo para las obras de siempre: se crean con dos clics y se ajustan las mediciones."
+        subtitulo="Presupuestos tipo para las obras de siempre. El importe es orientativo, con los precios de hoy del banco: en cada obra se ajustan las mediciones."
       />
-      <EmptyState
-        icono={LayoutTemplateIcon}
-        titulo={`${lista.length} Plantillas Listas: ${lista.map((p) => formatoTitulo(p.nombre)).join(", ")}`}
-        texto="Ver sus líneas, crear un presupuesto desde una plantilla y guardar cualquier presupuesto como plantilla llegan en la fase 4."
-      />
+
+      {lista.length === 0 ? (
+        <EmptyState
+          icono={LayoutTemplateIcon}
+          titulo="Todavía No Tienes Ninguna Plantilla"
+          texto="Las plantillas nacen de un presupuesto que ya has hecho: abre uno, dale a «Guardar como plantilla» y lo tendrás aquí para la próxima obra igual."
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {lista.map((p) => (
+            <TarjetaDePlantilla key={p.id} plantilla={p} />
+          ))}
+        </div>
+      )}
+
+      <p className="text-xs text-muted-foreground">
+        ¿Te falta una? Abre cualquier presupuesto y guárdalo como plantilla: se copian sus líneas,
+        sus unidades y sus mediciones.
+      </p>
     </div>
   );
 }
