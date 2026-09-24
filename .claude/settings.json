@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev*)",
+      "Bash(npm run check*)",
+      "Bash(npm run db:push*)",
+      "Bash(npm run humo*)",
+      "Bash(npx tsc*)",
+      "Bash(npx drizzle-kit push*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git tag*)",
+      "Bash(curl http://localhost:3000*)",
+      "Bash(curl -s http://localhost:3000*)",
+      "Bash(ls*)",
+      "Bash(cat data/base-precios.csv*)"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Read(./.env)",
+      "Read(./data/demo.db)",
+      "Bash(npm install*)",
+      "Bash(npm i *)",
+      "Bash(npx shadcn*)",
+      "Bash(rm -rf*)",
+      "Bash(git push*)",
+      "Bash(git reset --hard*)"
+    ]
+  }
+}
